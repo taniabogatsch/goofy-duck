@@ -2,39 +2,8 @@ package main
 
 /*
 #include <stdlib.h>
-
-typedef struct {
-} duckdb_ext_api_v0;
-
-typedef struct _duckdb_connection {
-	void *internal_ptr;
-} * duckdb_connection;
-
-typedef struct _duckdb_extension_info {
-	void *internal_ptr;
-} * duckdb_extension_info;
-
-typedef struct _duckdb_database {
-	void *internal_ptr;
-} * duckdb_database;
-
-typedef struct _duckdb_extension_access duckdb_extension_access;
-
-struct _duckdb_extension_access {
-	void (*set_error)(duckdb_extension_info info, const char *error);
-	duckdb_database *(*get_database)(duckdb_extension_info info);
-	void *(*get_api)(duckdb_extension_info info, const char *version);
-};
-
-typedef void (*set_error)(duckdb_extension_info info, const char *error);
-typedef void *(*get_api)(duckdb_extension_info info, const char *version);
-
-static void *invoke_get_api(get_api f, duckdb_extension_info info, const char *version) {
-	return f(info, version);
-}
-static void *invoke_get_api(get_api f, duckdb_extension_info info, const char *version) {
-	return f(info, version);
-}
+#include <duckdb.h>
+#include <extension.h>
 */
 import "C"
 import (
@@ -42,8 +11,8 @@ import (
 	"unsafe"
 )
 
-//export plant_init_c_api
-func plant_init_c_api(info C.duckdb_extension_info, access *C.duckdb_extension_access) {
+//export goofy_duck_init_c_api
+func goofy_duck_init_c_api(info C.duckdb_extension_info, access *C.duckdb_extension_access) {
 	version := C.CString("v0.0.1")
 	api := (*C.duckdb_ext_api_v0)(C.invoke_get_api(access.get_api, info, version))
 	C.free(unsafe.Pointer(version))
@@ -52,7 +21,7 @@ func plant_init_c_api(info C.duckdb_extension_info, access *C.duckdb_extension_a
 		return
 	}
 
-	fmt.Println("plants are cool")
+	fmt.Println("extensions in Go are cool")
 }
 
 func main() {
