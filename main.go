@@ -40,9 +40,8 @@ func setError(info C.duckdb_extension_info, access *C._duckdb_extension_access, 
 	C.free(unsafe.Pointer(err))
 }
 
-//export goofy_duck_init_c_api
-func goofy_duck_init_c_api(info C.duckdb_extension_info, access *C._duckdb_extension_access) {
-	version := C.CString("v0.0.1")
+func initAPI(minVersion string, info C.duckdb_extension_info, access *C._duckdb_extension_access) {
+	version := C.CString(minVersion)
 	api = (*C.duckdb_ext_api_v0)(C._get_api(access.get_api, info, version))
 	C.free(unsafe.Pointer(version))
 	if api == nil {
@@ -58,6 +57,12 @@ func goofy_duck_init_c_api(info C.duckdb_extension_info, access *C._duckdb_exten
 	}
 	C._duckdb_disconnect(api.duckdb_disconnect, &con)
 	fmt.Println("extensions in Go are cool")
+}
+
+//export goofy_duck_init_c_api
+func goofy_duck_init_c_api(info C.duckdb_extension_info, access *C._duckdb_extension_access) {
+	initAPI("v0.0.1", info, access)
+	// other init
 }
 
 func main() {
