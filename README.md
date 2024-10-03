@@ -6,4 +6,3 @@ python3 append_extension_metadata.py -l main -n goofy_duck -dv v0.0.1 -ev v0.0.1
 ```
 
 `append_extension_metadata.py` is copied over from the duckdb repo.
-`generate_go_api.py` is adapted from `scripts/generate_c_api.py` (duckdb repo).
