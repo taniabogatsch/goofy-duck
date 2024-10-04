@@ -7,7 +7,6 @@ typedef void (*callback_t)(void *info, void *in, void *out);
 import "C"
 import (
 	"duckdb"
-	"fmt"
 	"unsafe"
 )
 
@@ -19,29 +18,26 @@ func callback(info unsafe.Pointer, in unsafe.Pointer, out unsafe.Pointer) {
 	var output duckdb.Vector
 	output.Set(out)
 
-	version := api.LibraryVersion()
-	fmt.Println(version)
+	size := duckdb.DataChunkGetSize(input)
 
-	size := api.DataChunkGetSize(input)
-
-	left := api.DataChunkGetVector(input, 0)
-	leftPtr := api.VectorGetData(left)
+	left := duckdb.DataChunkGetVector(input, 0)
+	leftPtr := duckdb.VectorGetData(left)
 	leftData := (*[1 << 30]uint64)(leftPtr)[:size:size]
-	leftMask := api.VectorGetValidity(left)
+	leftMask := duckdb.VectorGetValidity(left)
 
-	right := api.DataChunkGetVector(input, 1)
-	rightPtr := api.VectorGetData(right)
+	right := duckdb.DataChunkGetVector(input, 1)
+	rightPtr := duckdb.VectorGetData(right)
 	rightData := (*[1 << 30]uint64)(rightPtr)[:size:size]
-	rightMask := api.VectorGetValidity(right)
+	rightMask := duckdb.VectorGetValidity(right)
 
-	outPtr := api.VectorGetData(output)
+	outPtr := duckdb.VectorGetData(output)
 	outData := (*[1 << 30]uint64)(outPtr)[:size:size]
-	api.VectorEnsureValidityWritable(output)
-	outMask := api.VectorGetValidity(output)
+	duckdb.VectorEnsureValidityWritable(output)
+	outMask := duckdb.VectorGetValidity(output)
 
 	for i := uint64(0); i < size; i++ {
-		if !api.ValidityRowIsValid(leftMask, i) || !api.ValidityRowIsValid(rightMask, i) {
-			api.ValiditySetRowInvalid(outMask, i)
+		if !duckdb.ValidityRowIsValid(leftMask, i) || !duckdb.ValidityRowIsValid(rightMask, i) {
+			duckdb.ValiditySetRowInvalid(outMask, i)
 			continue
 		}
 
@@ -50,20 +46,20 @@ func callback(info unsafe.Pointer, in unsafe.Pointer, out unsafe.Pointer) {
 }
 
 func registerMyAddition(conn duckdb.Connection, name string) duckdb.State {
-	f := api.CreateScalarFunction()
-	api.ScalarFunctionSetName(f, name)
+	f := duckdb.CreateScalarFunction()
+	duckdb.ScalarFunctionSetName(f, name)
 
-	t := api.CreateLogicalType(duckdb.TYPE_BIGINT)
-	api.ScalarFunctionAddParameter(f, t)
-	api.ScalarFunctionAddParameter(f, t)
-	api.ScalarFunctionSetReturnType(f, t)
-	api.DestroyLogicalType(&t)
+	t := duckdb.CreateLogicalType(duckdb.TYPE_BIGINT)
+	duckdb.ScalarFunctionAddParameter(f, t)
+	duckdb.ScalarFunctionAddParameter(f, t)
+	duckdb.ScalarFunctionSetReturnType(f, t)
+	duckdb.DestroyLogicalType(&t)
 
 	var cb duckdb.ScalarFunctionT
 	cb.Set(unsafe.Pointer(C.callback_t(C.callback)))
-	api.ScalarFunctionSetFunction(f, cb)
+	duckdb.ScalarFunctionSetFunction(f, cb)
 
-	state := api.RegisterScalarFunction(conn, f)
-	api.DestroyScalarFunction(&f)
+	state := duckdb.RegisterScalarFunction(conn, f)
+	duckdb.DestroyScalarFunction(&f)
 	return state
 }
