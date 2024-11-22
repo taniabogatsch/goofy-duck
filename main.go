@@ -7,20 +7,21 @@ import (
 )
 
 //export goofy_duck_init_c_api
-func goofy_duck_init_c_api(info unsafe.Pointer, access unsafe.Pointer) {
+func goofy_duck_init_c_api(info unsafe.Pointer, access unsafe.Pointer) bool {
 	api, err := duckdb.Init("v0.0.1", info, access)
 	if err != nil {
-		return
+		return false
 	}
 
 	// TODO: Any additional extension load steps. For example:
 	db := api.Database()
 	var conn duckdb.Connection
 	if state := duckdb.Connect(db, &conn); state == duckdb.STATE_ERROR {
-		return
+		return false
 	}
 	registerMyAddition(conn, "my_addition")
 	duckdb.Disconnect(&conn)
+	return true
 }
 
 func main() {

@@ -12,11 +12,8 @@ import (
 
 //export callback
 func callback(info unsafe.Pointer, in unsafe.Pointer, out unsafe.Pointer) {
-	var input duckdb.DataChunk
-	input.Set(in)
-
-	var output duckdb.Vector
-	output.Set(out)
+	input := duckdb.DataChunk{Ptr: in}
+	output := duckdb.Vector{Ptr: out}
 
 	size := duckdb.DataChunkGetSize(input)
 
@@ -55,9 +52,8 @@ func registerMyAddition(conn duckdb.Connection, name string) duckdb.State {
 	duckdb.ScalarFunctionSetReturnType(f, t)
 	duckdb.DestroyLogicalType(&t)
 
-	var cb duckdb.ScalarFunctionT
-	cb.Set(unsafe.Pointer(C.callback_t(C.callback)))
-	duckdb.ScalarFunctionSetFunction(f, cb)
+	deleteFun := unsafe.Pointer(C.callback_t(C.callback))
+	duckdb.ScalarFunctionSetFunction(f, deleteFun)
 
 	state := duckdb.RegisterScalarFunction(conn, f)
 	duckdb.DestroyScalarFunction(&f)

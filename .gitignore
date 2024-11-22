@@ -1,2 +1,5 @@
 .idea
 .DS_Store
+main
+main.h
+goofy_duck.duckdb_extension
