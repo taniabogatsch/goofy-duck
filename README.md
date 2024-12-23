@@ -9,7 +9,7 @@ It differs from go-duckdb because it does not implement Go's SQL driver interfac
 #### Some copy-pasta for development.
 ```
 go build --buildmode=c-shared ./
-python3 append_extension_metadata.py -l main -n goofy_duck -dv v0.0.1 -ev v0.0.1 -p osx_arm64
+python3 append_extension_metadata.py -l main -n goofy_duck -dv v1.2.0 -ev v1.2.0 -p osx_arm64
 ../duckdb/build/release/duckdb -unsigned 
  load './goofy_duck.duckdb_extension';
 ```
