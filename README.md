@@ -1,3 +1,6 @@
+> [!NOTE]  
+> I have not been maintaining this repository for a while. The C API - Go bindings are now at https://github.com/duckdb/duckdb-go-bindings, so the references to the duckdb-go-api in this repository are outdated.
+
 ### Repo Information
 
 At this stage, this repo (goofy-duck) is a proof of concept for writing Go duckdb extensions using the C API instead of the C++ interface. Without the need to write any C code or cgo. I am not entirely there yet, as seen by the C code here: https://github.com/taniabogatsch/goofy-duck/blob/d0737d3097e8baa9d982dc97c8dd0d2047337606/my_addition.go#L4
